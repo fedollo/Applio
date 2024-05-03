@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generatore TTS</title>
+</head>
+<body>
+    <h1>Fedus TTS</h1>
+    <form id="ttsForm">
+        <label for="textInput">Inserisci il testo:</label>
+        <input type="text" id="textInput" name="text" required>
+        <button type="submit">Genera TTS</button>
+    </form>
+    <audio id="audioPlayer" controls style="display: none;"></audio>
+    
+    <script>
+        document.getElementById('ttsForm').onsubmit = async function(event) {
+            event.preventDefault(); // Impedisci l'invio del form
+            const textInput = document.getElementById('textInput').value;
+            const formData = new FormData();
+            formData.append('text', textInput);
+
+            // Invia la richiesta al server
+            const response = await fetch('/generate-tts/', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (response.ok) {
+                const audioPlayer = document.getElementById('audioPlayer');
+                const audioBlob = await response.blob();
+                const audioUrl = URL.createObjectURL(audioBlob);
+                audioPlayer.src = audioUrl;
+                audioPlayer.style.display = 'block'; // Mostra il player audio
+                audioPlayer.play(); // Riproduci l'audio
+            } else {
+                alert('Errore nella generazione del TTS.');
+            }
+        };
+    </script>
+</body>
+</html>
